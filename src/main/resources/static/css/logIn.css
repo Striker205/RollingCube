@@ -1,0 +1,57 @@
+body {
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,9,56,1) 31%, rgba(3,0,255,1) 100%);
+}
+.container-login, .container-signin {
+    background-color: whitesmoke;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+    width: 30%;
+    border: 3px;
+    padding: 20px;
+    font-size: 25px;
+
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+.log[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button[type=submit]:hover {
+    opacity: 0.8;
+}
+
+.signInBtn, .cancel, .back {
+    background-color: dodgerblue;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.back {
+    background-color: dodgerblue;
+}
+
+.cancel {
+    background-color: red;
+}

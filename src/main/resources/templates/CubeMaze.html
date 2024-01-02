@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gamestudio</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dice.css">
+    <link rel="stylesheet" href="/css/tableStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <h1 class="title">CubeMaze</h1>
+</header>
+
+    <div class="logged">
+        <span th:if="${@userController.logged}">
+        <strong>Logged as: </strong><span th:text="${@userController.loggedUser.login}"/><br>
+        </span>
+    </div>
+
+<nav>
+    <div class="button-group">
+
+    <div class="dropdown"><button class="btn">Menu</button>
+        <div class="dropdown-content">
+            <a th:href="@{/}" th:if="not ${@userController.logged}">Log In</a>
+            <a th:href="@{/}" th:if="${@userController.logged}">Log Out</a>
+        </div>
+    </div>
+
+    <button class="btn" onclick="infoShow()">Info</button>
+    <button class="btn" onclick="ratingShow()">Show rating</button>
+    <button class="btn" onclick="commentShow()">Show comments</button>
+    <button class="btn" onclick="scoreShow()">Show scores</button>
+
+    <div class="dropdown">
+        <button class="btn">Levels</button>
+
+            <div class="dropdown-content">
+                <a th:each="i : ${#numbers.sequence(1,@cubeMazeController.getLevelNum())}"
+                   th:href="@{/CubeMaze/load(level=${i})}"
+                   th:text="'Level ' + ${i}"></a>
+            </div>
+
+    </div>
+
+    </div>
+</nav>
+
+<main>
+
+    <div class="info">
+        <div id="rating" style="display:none;">
+            <h2>Rating</h2>
+            <div class="rating-box-show" th:data-numStars="${rating}">
+                <div class="r-stars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+        </div>
+
+        <div id="comments" style="display:none;">
+            <div th:replace="fragments/fragments :: comments"></div><br>
+
+            <button th:if="${@userController.logged}" type="button" class="comment-btn" onclick="commentRateShow()">Comment</button>
+        </div>
+
+
+        <div id="scores" style="display:none;" >
+            <div th:replace="fragments/fragments :: scores"></div>
+        </div>
+
+        <div id="infoWin" style="font-size: large; display: none">
+            <h2>How to play</h2>
+            <span><strong>Movement: </strong>W-A-S-D</span><br>
+            <span><strong>Reset level: </strong>R</span><br>
+        </div>
+    </div>
+
+<div id="gamefield" style="display: block">
+    <div class="field">
+        <strong style="text-align: center; font-size: larger">Time: <span id="time" th:text="${timeLevel}"></span></strong>
+        <span th:utext="${@cubeMazeController.getHtmlField()}"></span>
+    </div>
+</div>
+
+
+</main>
+</div>
+
+<div>
+    <div class="dice scrolling-div">
+        <span th:utext="${@cubeMazeController.getHtmlDice()}"></span>
+    </div>
+</div>
+
+
+<div class="gamestate scrolling-div-level">
+    <img src="/images/logo.png" alt="Logo" style="text-align: left"><br>
+    <h2><span th:text="'Level: ' + ${levelNum}"/></h2>
+    <h3>Game state: <span th:text="${gameState}"/></h3>
+    <h3>Move state: <span th:text="${moveState}"/></h3><br>
+</div>
+
+<div class="window-popup" style="display: none" id="comment-window">
+    <div class="window-popup-content">
+        <form action="/CubeMaze/commentgame">
+            <h1><strong>Rate the game</strong></h1>
+
+            <label for="comment-input"><b>Comment</b></label><br>
+            <input type="text" id="comment-input" placeholder="Enter comment" style="font-size: large" name="comment"/><br><br>
+
+            <label><b>Rating</b></label><br>
+            <div class="rating-box">
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="submit" style=" font-size: large">Submit</button>
+            <button type="button" class="cancel" style=" font-size: large" onclick="commentRateShow()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<div th:if="${#strings.equals(gameState, 'SOLVED')} AND not ${endOfGame}" id="nextLevel-id" class="nextLevel-popup">
+    <div class="nextLevel-popup-content">
+        <h2 th:text="'YOU BEAT  ' + ${levelNum} + '. LEVEL!'"/>
+        <button class="again" onclick="window.location.href='/CubeMaze/loadAgain'">Play again</button>
+        <button class="next" onclick="window.location.href='/CubeMaze/loadNext'">Next level</button>
+    </div>
+</div>
+
+<div th:if="${endOfGame}" class="endOfGame-popup">
+    <div class="endOfGame-popup-content">
+        <h2>YOU COMPLETED ALL LEVELS, CONGRATULATION!</h2>
+        <button class="next" onclick="window.location.href='/CubeMaze/end'">Close</button>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(setInterval(() => {
+        $("#time").load("/CubeMaze/time");
+    }, 1000));
+</script>
+
+<script>
+    const ratingBoxShow = document.querySelector(".rating-box-show");
+    const starsShow = ratingBoxShow.querySelectorAll(".r-stars i");
+    const numStars = ratingBoxShow.getAttribute("data-numStars");
+
+    starsShow.forEach((star, index) => {
+        if (index < numStars) {
+            star.classList.add("active");
+        } else {
+            star.classList.remove("active");
+        }
+    });
+</script>
+
+<script>
+    const ratingBox = document.querySelector(".rating-box");
+    const stars = ratingBox.querySelectorAll(".stars i");
+
+    stars.forEach((star, index1) => {
+        star.addEventListener("click", () => {
+            stars.forEach((star, index2) => {
+                if(index1 >= index2) {
+                    star.classList.add("active")
+                }else {
+                    star.classList.remove("active");
+                }
+            });
+        });
+    });
+
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const rating = document.querySelectorAll(".stars .active").length;
+
+        const ratingInput = document.createElement('input');
+        ratingInput.name = 'rating';
+        ratingInput.value = rating;
+        form.appendChild(ratingInput);
+
+        form.submit();
+    });
+</script>
+
+<script>
+    var scoresDiv = document.getElementById("scores");
+    var commentsDiv = document.getElementById("comments");
+    var ratingDiv = document.getElementById("rating");
+    var commentWin = document.getElementById("comment-window");
+    var infoDiv = document.getElementById("infoWin");
+
+    function infoShow() {
+        if (infoDiv.style.display === "none") {
+            infoDiv.style.display = "block";
+            scoresDiv.style.display = "none";
+            commentsDiv.style.display = "none";
+            ratingDiv.style.display = "none";
+        } else {
+            infoDiv.style.display = "none";
+        }
+    }
+    function commentRateShow() {
+        if (commentWin.style.display === "none") {
+            commentWin.style.display = "flex";
+        } else {
+            commentWin.style.display = "none";
+        }
+    }
+    function scoreShow() {
+        if (scoresDiv.style.display === "none") {
+            scoresDiv.style.display = "block";
+            commentsDiv.style.display = "none";
+            ratingDiv.style.display = "none";
+            infoDiv.style.display = "none";
+        } else {
+            scoresDiv.style.display = "none";
+
+        }
+    }
+    function commentShow() {
+        if (commentsDiv.style.display === "none") {
+            scoresDiv.style.display = "none";
+            commentsDiv.style.display = "block";
+            ratingDiv.style.display = "none";
+            infoDiv.style.display = "none";
+        } else {
+            commentsDiv.style.display = "none";
+        }
+    }
+    function ratingShow() {
+        if (ratingDiv.style.display === "none") {
+            scoresDiv.style.display = "none";
+            commentsDiv.style.display = "none";
+            ratingDiv.style.display = "block";
+            infoDiv.style.display = "none";
+        } else {
+            ratingDiv.style.display = "none";
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener("keydown", function(event) {
+        if (event.target.tagName.toLowerCase() !== 'input') {
+            switch (event.key) {
+                case 'w':
+                    window.location.href = "/CubeMaze/move?direction=W";
+                    break;
+                case 's':
+                    window.location.href = "/CubeMaze/move?direction=S";
+                    break;
+                case 'a':
+                    window.location.href = "/CubeMaze/move?direction=A";
+                    break;
+                case 'd':
+                    window.location.href = "/CubeMaze/move?direction=D";
+                    break;
+                case 'r':
+                    window.location.href = "/CubeMaze/reset";
+                    break;
+                default:
+                    window.location.href = "/CubeMaze";
+            }
+        }else {
+            event.stopPropagation();
+        }
+    });
+</script>
+
+</body>
+</html>

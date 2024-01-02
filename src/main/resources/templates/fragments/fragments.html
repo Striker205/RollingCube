@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+
+<div th:fragment="comments">
+  <h2>Comments</h2>
+  <table class="rate">
+    <thead>
+    <tr>
+      <th>No.</th>
+      <th>Player</th>
+      <th>Comment</th>
+      <th>Rating</th>
+      <th>Commented at</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <!--/*@thymesVar id="comments" type="java.util.List<sk.tuke.kpi.kp.rollingCube.entity.Comment>"*/-->
+    <tr th:each="comment, it : ${comments}">
+      <td th:text="${it.index + 1}"/>
+      <td th:text="${comment.player}"/>
+      <td th:text="${comment.comment}"/>
+      <td th:text="${@cubeMazeController.ratingService.getRating('CubeMaze', comment.player)} + '&#9733;'"/>
+      <td th:text="${#dates.format(comment.commentedOn, 'dd.MM.yyyy HH:mm')}"/>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+<div th:fragment="scores">
+  <h2>Top scores in Game</h2>
+  <table class="rate">
+    <thead>
+    <tr>
+      <th>No.</th>
+      <th>Player</th>
+      <th>Time</th>
+      <th>Level</th>
+      <th>Played at</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <!--/*@thymesVar id="scoresInGame" type="java.util.List<sk.tuke.kpi.kp.rollingCube.entity.Score>"*/-->
+    <tr th:each="score, it : ${scoresInGame}">
+      <td th:text="${it.index + 1}"/>
+      <td th:text="${score.player}"/>
+      <td th:text="${score.points}  + 's'"/>
+      <td th:text="${score.level}"/>
+      <td th:text="${#dates.format(score.playedOn, 'dd.MM.yyyy HH:mm')}"/>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<div th:fragment="scores">
+  <!--/*@thymesVar id="levelNum" type="java.util.List<sk.tuke.kpi.kp.rollingCube.game.core>"*/-->
+  <h2 th:text="'Top scores In ' + ${levelNum} + '. Level'"></h2>
+  <table class="rate">
+    <thead>
+    <tr>
+      <th>No.</th>
+      <th>Player</th>
+      <th>Time</th>
+      <th>Played at</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <!--/*@thymesVar id="scoresInLevel" type="java.util.List<sk.tuke.kpi.kp.rollingCube.entity.Score>"*/-->
+    <tr th:each="score, it : ${scoresInLevel}">
+      <td th:text="${it.index + 1}"/>
+      <td th:text="${score.player}"/>
+      <td th:text="${score.points} + 's'"/>
+      <td th:text="${#dates.format(score.playedOn, 'dd.MM.yyyy HH:mm')}"/>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</html>

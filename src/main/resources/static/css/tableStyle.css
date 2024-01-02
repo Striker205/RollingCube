@@ -1,0 +1,19 @@
+table.rate {
+    width: 100%;
+    border: black 2px;
+    font-size: larger;
+}
+
+table.rate th{
+    font-weight: bold;
+    color: #ffffff;
+    background-color: royalblue;
+}
+
+table.rate tr:nth-child(even) {
+    background-color: lightgray;
+}
+
+table.rate tr:nth-child(odd) {
+    background-color: white;
+}

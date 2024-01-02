@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+        lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gamestudio</title>
+    <link rel="stylesheet" href="/css/logIn.css">
+
+</head>
+<body>
+
+<div class="container-login" id="div-login" style="display: block">
+<h1 style="text-align: center">CubeMaze</h1>
+
+<form th:if="not ${@userController.logged}" action="/login">
+    <h1>Log In</h1>
+
+    <p th:if="not ${@userController.isSignIn()}" >SignIn Error : <strong>User with this login already exists.</strong></p>
+    <p th:if="not ${@userController.isLogIn()}" >LogIn Error : <strong>Incorrect name or password.</strong></p>
+
+    <label for="login-input"><b>Name</b></label><br>
+    <input type="text" id="login-input" placeholder="Enter Name" style="font-size: large" name="login"><br>
+
+    <label for="password-input"><b>Password</b></label><br>
+    <input type="password" id="password-input" placeholder="Enter Password" style="font-size: large" name="password"><br><br>
+
+    <button type="submit" class="log" style="font-size: large">Log In</button>
+    <button type="button" class="signInBtn" style="font-size: large" onclick="signInForm()">Sign In</button>
+    <button type="button" class="back" style="font-size: large" onclick="window.location.href='/CubeMaze'">Back</button>
+
+</form>
+
+<button th:if="${@userController.logged}" onclick="window.location.href='/logout'"
+        type="submit" class="cancel" style="font-size: large">
+    Logout
+</button>
+
+</div>
+
+<div class="container-signin" id="div-signin" style="display: none">
+<h1 style="text-align: center">CubeMaze</h1>
+
+<form id="signin" action="/signin">
+    <h1>Sign In</h1>
+
+    <p th:if="not ${@userController.isSignIn()}" >SignIn Error : <strong>User with this login already exists.</strong></p>
+
+    <label for="login-input-s"><b>Name</b></label><br>
+    <input type="text" id="login-input-s" placeholder="Enter Name" style="font-size: large" name="login"><br>
+
+    <label for="password-input-s"><b>Password</b></label><br>
+    <input type="password" id="password-input-s" placeholder="Enter Password" style="font-size: large" name="password"><br><br>
+
+    <button type="submit" class="log" style="font-size: large">Sign In</button>
+    <button type="button" class="back" style="font-size: large" onclick="logInForm()">Back</button>
+</form>
+</div>
+
+<script>
+    function signInForm() {
+        document.getElementById("div-login").style.display = "none";
+        document.getElementById("div-signin").style.display = "block";
+    }
+
+    function logInForm() {
+        document.getElementById("div-signin").style.display = "none";
+        document.getElementById("div-login").style.display = "block";
+    }
+
+</script>
+
+</body>
+</html>
